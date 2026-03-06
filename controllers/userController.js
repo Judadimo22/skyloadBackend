@@ -1,5 +1,6 @@
 const userSchema = require("../models/user");
-const UserServices = require("../services/userServices")
+const UserServices = require("../services/userServices");
+const { sendError } = require("../utils/funciones");
 const createUser = async (req, res) => {
   const { email, password, name, lastName, } = req.body
 
@@ -62,8 +63,22 @@ const loginUser = async (req, res) => {
   }
 };
 
+const getUsers = async (req,res) => {
+    try {
+        const users = await userSchema.find();
+        if(!users) {
+            return sendError(res, 400, "No hay usuarios registrados");
+        }
+        return res.status(200).json(users);
+    } catch (error) {
+        console.log(error, 'err---->');
+        res.status(400).json({ error: 'Ha ocurrido un error' });
+    }
+}
+
 module.exports = {
     createUser,
-    loginUser
+    loginUser,
+    getUsers
 }
     
