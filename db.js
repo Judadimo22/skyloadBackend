@@ -7,7 +7,7 @@ const MONGODB = () => {
     .connect(
       process.env.MONGO_URI
     )
-    .then(() => console.log("Connected to MongoDB"))
+    .then(() => console.log("Connected to MongoDB",))
     .catch((error) =>
       console.error("Error connection to MongoDB", error.message)
     );

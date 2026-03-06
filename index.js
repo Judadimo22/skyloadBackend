@@ -10,6 +10,7 @@ const cors = require("cors");
 app.use(cors());
 const port = process.env.PORT || 3002;
 require("dotenv").config();
+const AdminRoute = require("./routes/adminRoutes");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -33,6 +34,7 @@ app.use((_req, res, next) => {
 });
 
 app.use(morgan("dev"));
+app.use("/", AdminRoute)
 app.get("/", (req, res) => {
   res.status(200).send("Welcome to Skyload");
 });
