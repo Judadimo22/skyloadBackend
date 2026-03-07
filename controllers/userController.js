@@ -67,16 +67,16 @@ const loginUser = async (req, res) => {
 };
 
 const getUsers = async (req,res) => {
-    try {
-        const users = await userSchema.find();
-        if(!users) {
-            return sendError(res, 400, "No hay usuarios registrados");
-        }
-        return res.status(200).json(users);
-    } catch (error) {
-        console.log(error, 'err---->');
-        res.status(400).json({ error: 'Ha ocurrido un error' });
+  try {
+    const users = await userSchema.find();
+    if(!users) {
+      return sendError(res, 400, "No hay usuarios registrados");
     }
+     return res.status(200).json(users);
+  } catch (error) {
+    console.log(error, 'err---->');
+    res.status(400).json({ error: 'Ha ocurrido un error' });
+  }
 }
 
 const getLoadsById = async (req,res) => {

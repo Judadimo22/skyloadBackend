@@ -20,6 +20,20 @@ const createLoad = async (req, res) => {
     }
 };
 
+const getLoads = async (req,res) => {
+  try {
+    const loads = await loadSchema.find();
+    if(!loads) {
+      return sendError(res, 400, "No hay cargas disponibles");
+    }
+     return res.status(200).json(loads);
+  } catch (error) {
+    console.log(error, 'err---->');
+    res.status(400).json({ error: 'Ha ocurrido un error' });
+  }
+}
+
 module.exports = {
-    createLoad
+    createLoad,
+    getLoads
 }
