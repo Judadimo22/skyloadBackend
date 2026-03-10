@@ -5,7 +5,8 @@ const { sendError } = require("../utils/funciones");
 
 
 const createUser = async (req, res) => {
-  const { email, password, name, lastName, } = req.body
+  const { email, password, name, lastName, vehicle} = req.body
+  console.log(req.body)
 
   const formatoCorreo = /^([a-zA-Z0-9_.+-]+)@([\w-]+\.)+[\w-]{2,4}$/
   if (!formatoCorreo.test(email)) {
@@ -16,7 +17,7 @@ const createUser = async (req, res) => {
   if (user) {
     return res.status(400).json({ error: "El correo ya se encuentra registrado" })
   } else {
-    user = await UserServices.registerUserService(email, password, name, lastName)
+    user = await UserServices.registerUserService(email, password, name, lastName, vehicle)
   }
 
   const tokenData = { _id: user._id, email: user.email, }
@@ -27,8 +28,7 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    console.log(req.body)
+    const { email, password, fcmToken } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({
@@ -38,14 +38,16 @@ const loginUser = async (req, res) => {
     }
 
     let user = await userSchema.findOne({ email });
+
     if (!user) {
       return res.status(400).json({
         status: false,
         error: "El usuario no existe",
-      });;
+      });
     }
 
     const isPasswordCorrect = await UserServices.comparePassword(password, user.password);
+
     if (!isPasswordCorrect) {
       return res.status(400).json({
         status: false,
@@ -53,16 +55,28 @@ const loginUser = async (req, res) => {
       });
     }
 
+    if (fcmToken) {
+      if (!user.fcmToken || user.fcmToken !== fcmToken) {
+        user.fcmToken = fcmToken;
+        await user.save();
+      }
+    }
 
-
-    const tokenData = { _id: user._id, email: user.email};
-
+    const tokenData = { _id: user._id, email: user.email };
     const token = await UserServices.generateAccessToken(tokenData);
 
-    res.status(200).json({ status: true, success: "sendData", token: token });
+    res.status(200).json({
+      status: true,
+      success: "sendData",
+      token: token
+    });
+
   } catch (error) {
     console.log(error, 'err---->');
-    res.status(400).json({ error: 'Ha ocurrido un error' });
+    res.status(400).json({
+      error: 'Ha ocurrido un error'
+    });
+
   }
 };
 
@@ -149,11 +163,56 @@ const updateLoadState = async (req, res) => {
   }
 };
 
+const updateUserLocation = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+    const { lat, lon } = req.body;
+
+    if (!id) {
+      return sendError(res, 400, "User id was not received");
+    }
+
+    if (lat === undefined || lon === undefined) {
+      return sendError(res, 400, "Latitude and longitude are required");
+    }
+
+    const user = await userSchema.findByIdAndUpdate(
+      id,
+      {
+        lat: lat,
+        lon: lon
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return sendError(res, 404, "User not found");
+    }
+
+    return res.status(200).json({
+      message: "User location updated successfully",
+      lat: user.lat,
+      lon: user.lon
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    return res.status(500).json({
+      error: "Error updating user location"
+    });
+
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
   getUsers,
   getLoadsById,
-  updateLoadState
+  updateLoadState,
+  updateUserLocation
 }
     

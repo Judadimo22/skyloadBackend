@@ -13,6 +13,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Falta la contraseña"],
     },
+    fcmToken: {
+        type: String
+    },
     name: {
         type: String,
         required: true
@@ -20,6 +23,15 @@ const userSchema = new mongoose.Schema({
     lastName: {
         type: String,
         required: true
+    },
+    vehicle: {
+        type: String
+    },
+    lat: {
+        type: String,
+    },
+    lon: {
+        type: String
     }
 }, { timestamps: true });
 

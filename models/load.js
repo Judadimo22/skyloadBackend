@@ -33,10 +33,14 @@ const loadSchema = new mongoose.Schema({
         type: String,
     },
     user: {
-        type: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user"
     },
     state: {
         type: String
+    },
+    rate:{
+        type: Number
     }
 
 }, { timestamps: true });
