@@ -34,9 +34,70 @@ const createLoad = async (req, res) => {
   }
 };
 
+const updateLoad = async (req, res) => {
+  const { id } = req.params;
+  const {
+    datePickUp,
+    companyNamePickUp,
+    addressPickup,
+    cityPickUp,
+    notePickUp,
+    dateDelivery,
+    companyDelivery,
+    addressDelivery,
+    cityDelivery,
+    noteDelivery,
+    rate,
+    state,
+  } = req.body;
+
+  try {
+
+    const load = await loadSchema.findById(id);
+
+    if (!load) {
+      return res.status(404).json({
+        status: false,
+        message: "Carga no encontrada",
+      });
+    }
+
+  
+    load.datePickUp = datePickUp ?? load.datePickUp;
+    load.companyNamePickUp = companyNamePickUp ?? load.companyNamePickUp;
+    load.addressPickup = addressPickup ?? load.addressPickup;
+    load.cityPickUp = cityPickUp ?? load.cityPickUp;
+    load.notePickUp = notePickUp ?? load.notePickUp;
+
+    load.dateDelivery = dateDelivery ?? load.dateDelivery;
+    load.companyDelivery = companyDelivery ?? load.companyDelivery;
+    load.addressDelivery = addressDelivery ?? load.addressDelivery;
+    load.cityDelivery = cityDelivery ?? load.cityDelivery;
+    load.noteDelivery = noteDelivery ?? load.noteDelivery;
+
+    load.rate = rate ?? load.rate;
+    load.state = state ?? load.state;
+
+    await load.save();
+
+    return res.status(200).json({
+      status: true,
+      message: "Carga actualizada correctamente",
+      data: load,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      status: false,
+      message: "Error al actualizar la carga",
+    });
+  }
+};
+
 const getLoads = async (req, res) => {
   try {
-    const loads = await loadSchema.find().populate("user", "name lastName lat lon");
+    const loads = await loadSchema.find().populate("user", "name lastName lat lon unitNumber");
 
     return res.status(200).json(loads);
 
@@ -47,6 +108,7 @@ const getLoads = async (req, res) => {
 };
 
 module.exports = {
-    createLoad,
-    getLoads
+  createLoad,
+  getLoads,
+  updateLoad
 }

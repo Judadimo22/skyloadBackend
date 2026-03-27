@@ -6,10 +6,10 @@ const TOKEN_LLAVE_USUARIOS = process.env.TOKEN_LLAVE_USUARIOS || ''
 
 
 class UserServices {
-    static async registerUserService( email, password, name, lastName, vehicle) {
+    static async registerUserService( email, password, name, lastName, vehicle, vehicleDimension, unitNumber) {
         try {
         console.log("Nuevo usuario registrado", email);
-        const createUser = new UserModel({ email, password, name, lastName, vehicle});
+        const createUser = new UserModel({ email, password, name, lastName, vehicle, vehicleDimension, unitNumber});
         return await createUser.save();
         } catch (err) {
         throw err;

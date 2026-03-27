@@ -36,6 +36,10 @@ const loadSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "user"
     },
+    unitNumber: {
+        type: mongoose.Schema.Types.String,
+        ref: "unitNumber"
+    },
     state: {
         type: String
     },

@@ -1,5 +1,5 @@
 const { createAdmin, loginAdmin } = require("../controllers/adminController")
-const { createLoad, getLoads } = require("../controllers/loadController")
+const { createLoad, getLoads, updateLoad } = require("../controllers/loadController")
 const { getUsers } = require("../controllers/userController")
 
 const router = require("express").Router()
@@ -18,6 +18,10 @@ router.get("/users", (req, res) => {
 
 router.post("/asignLoad", (req, res) => {
   createLoad(req, res)
+})
+
+router.put("/load/:id", (req, res) => {
+  updateLoad(req, res)
 })
 
 router.get("/loads", (req, res) => {

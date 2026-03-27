@@ -27,6 +27,15 @@ const userSchema = new mongoose.Schema({
     vehicle: {
         type: String
     },
+    vehicleDimension: {
+        type: String
+    },
+    unitNumber: {
+        type: String
+    },
+    speed: {
+        type: String
+    },
     lat: {
         type: String,
     },

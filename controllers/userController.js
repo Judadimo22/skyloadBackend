@@ -5,7 +5,7 @@ const { sendError } = require("../utils/funciones");
 
 
 const createUser = async (req, res) => {
-  const { email, password, name, lastName, vehicle} = req.body
+  const { email, password, name, lastName, vehicle, vehicleDimension, unitNumber} = req.body
   console.log(req.body)
 
   const formatoCorreo = /^([a-zA-Z0-9_.+-]+)@([\w-]+\.)+[\w-]{2,4}$/
@@ -17,7 +17,7 @@ const createUser = async (req, res) => {
   if (user) {
     return res.status(400).json({ error: "El correo ya se encuentra registrado" })
   } else {
-    user = await UserServices.registerUserService(email, password, name, lastName, vehicle)
+    user = await UserServices.registerUserService(email, password, name, lastName, vehicle, vehicleDimension, unitNumber)
   }
 
   const tokenData = { _id: user._id, email: user.email, }
