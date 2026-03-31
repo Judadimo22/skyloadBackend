@@ -163,11 +163,65 @@ const updateLoadState = async (req, res) => {
   }
 };
 
+const revertLoadState = async (req, res) => {
+  try {
+    const { loadId } = req.params;
+
+    if (!loadId) {
+      return sendError(res, 400, "No se recibió el id de la carga");
+    }
+
+    const load = await loadSchema.findById(loadId);
+
+    if (!load) {
+      return sendError(res, 404, "Carga no encontrada");
+    }
+
+    const estados = [
+      "active",
+      "picked_up",
+      "on_the_way",
+      "delivered",
+      "completed"
+    ];
+
+    const estadoActualIndex = estados.indexOf(load.state);
+
+    if (estadoActualIndex === -1) {
+      return sendError(res, 400, "Estado inválido");
+    }
+
+    if (estadoActualIndex === 0) {
+      return res.status(200).json({
+        message: "La carga ya está en el estado inicial",
+        load
+      });
+    }
+
+    const estadoAnterior = estados[estadoActualIndex - 1];
+
+    load.state = estadoAnterior;
+
+    await load.save();
+
+    return res.status(200).json(load);
+
+  } catch (error) {
+
+    console.log(error);
+
+    return res.status(500).json({
+      error: "Error revirtiendo estado"
+    });
+
+  }
+};
+
 const updateUserLocation = async (req, res) => {
   try {
 
     const { id } = req.params;
-    const { lat, lon } = req.body;
+    const { lat, lon, speed } = req.body;
 
     if (!id) {
       return sendError(res, 400, "User id was not received");
@@ -181,7 +235,8 @@ const updateUserLocation = async (req, res) => {
       id,
       {
         lat: lat,
-        lon: lon
+        lon: lon,
+        speed: speed
       },
       { new: true }
     );
@@ -213,6 +268,7 @@ module.exports = {
   getUsers,
   getLoadsById,
   updateLoadState,
-  updateUserLocation
+  updateUserLocation,
+  revertLoadState
 }
     

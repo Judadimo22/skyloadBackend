@@ -13,8 +13,8 @@ const createLoad = async (req, res) => {
     const load = await loadSchema.create({datePickUp,companyNamePickUp,addressPickup,cityPickUp,notePickUp,dateDelivery,companyDelivery,addressDelivery,cityDelivery, noteDelivery,user,state: "active",rate});
     const userData = await userSchema.findById(user);
     if (userData && userData.fcmToken) {
-      const title = "🚛 New Load Available";
-      const body = `Pickup: ${cityPickUp} (${companyNamePickUp}) Delivery: ${cityDelivery} (${companyDelivery}) Rate: $${rate}`;
+      const title = "🚛 YOU GOT A NEW LOAD";
+      const body = `(${cityPickUp} -${cityDelivery}) Rate: $${rate}`;
       await sendNotification(userData.fcmToken,title,body,{
         loadId: load._id.toString(),
         pickupCity: cityPickUp,
