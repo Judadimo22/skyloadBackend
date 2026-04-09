@@ -1,12 +1,23 @@
 const loadSchema = require("../models/load");
 const userSchema = require("../models/user");
+const { sendError } = require("../utils/funciones");
 const sendNotification = require("../utils/sendNotifications");
 
 
 const createLoad = async (req, res) => {
   const {datePickUp, companyNamePickUp,addressPickup,cityPickUp,notePickUp,dateDelivery,companyDelivery,addressDelivery,cityDelivery,noteDelivery,user,rate} = req.body;
   if (!datePickUp || !companyNamePickUp || !addressPickup || !cityPickUp || !dateDelivery || !companyDelivery || !addressDelivery || !cityDelivery || !user || !rate) {
-    return sendError(res, 400, "Faltan campos para crear la carga");
+    return sendError(res, 400, "Fields are missing to create the load");
+  }
+
+  const userLoads = await loadSchema.find({
+    user: user,
+    state: { $ne: "completed" }
+  });
+
+  // Validar si tiene 2 o más
+  if (userLoads.length >= 2) {
+    return sendError(res, 400, "The user already has 2 active loads assigned.");
   }
 
   try {

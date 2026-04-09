@@ -20,6 +20,9 @@ const adminSchema = new mongoose.Schema({
     lastName: {
         type: String,
         required: true
+    },
+    rol: {
+        type: String,
     }
 }, { timestamps: true });
 

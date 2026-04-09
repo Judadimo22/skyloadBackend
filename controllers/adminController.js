@@ -1,6 +1,7 @@
 const adminSchema = require("../models/admin");
 const AdminServices = require("../services/adminServices");
 const { sendError } = require("../utils/funciones");
+const loadSchema = require("../models/load");
 
 const createAdmin = async (req, res) => {
   try {
@@ -53,6 +54,19 @@ const createAdmin = async (req, res) => {
   }
 };
 
+const getAdmins = async (req,res) => {
+  try {
+    const admins = await adminSchema.find();
+    if(!admins) {
+      return sendError(res, 400, "No hay administradores registrados");
+    }
+     return res.status(200).json(admins);
+  } catch (error) {
+    console.log(error, 'err---->');
+    res.status(400).json({ error: 'Ha ocurrido un error' });
+  }
+}
+
 const loginAdmin = async (req, res) => {
   try {
 
@@ -79,7 +93,8 @@ const loginAdmin = async (req, res) => {
 
     const tokenData = {
       _id: admin._id,
-      email: admin.email
+      email: admin.email,
+      rol: admin.rol ?? ''
     };
 
     const token = await AdminServices.generateAccessToken(tokenData);
@@ -100,7 +115,118 @@ const loginAdmin = async (req, res) => {
   }
 };
 
+const cancelLoad = async (req, res) => {
+  try {
+    const { loadId } = req.params;
+
+    if (!loadId) {
+      return sendError(res, 400, "Load ID was not provided");
+    }
+
+    const load = await loadSchema.findById(loadId);
+
+    if (!load) {
+      return sendError(res, 404, "Load not found");
+    }
+
+    // ❌ Do not allow cancel if already completed
+    if (load.state === "completed") {
+      return res.status(400).json({
+        message: "Cannot cancel a completed load",
+      });
+    }
+
+    // ❌ Prevent duplicate cancel
+    if (load.state === "cancelled") {
+      return res.status(400).json({
+        message: "The load is already cancelled",
+      });
+    }
+
+    // ✅ Update state
+    load.state = "cancelled";
+
+    await load.save();
+
+    return res.status(200).json({
+      message: "Load cancelled successfully",
+      load,
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      error: "Error cancelling the load",
+    });
+  }
+};
+
+const deleteLoad = async (req, res) => {
+  try {
+    const { loadId } = req.params;
+
+    if (!loadId) {
+      return sendError(res, 400, "Load ID was not provided");
+    }
+
+    const load = await loadSchema.findById(loadId);
+
+    if (!load) {
+      return sendError(res, 404, "Load not found");
+    }
+
+    await loadSchema.findByIdAndDelete(loadId);
+
+    return res.status(200).json({
+      message: "Load deleted successfully",
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      error: "Error deleting the load",
+    });
+  }
+};
+
+const deleteAdmin = async (req, res) => {
+  try {
+    const { adminId } = req.params;
+
+    if (!adminId) {
+      return sendError(res, 400, "Admin ID was not provided");
+    }
+
+    const admin = await adminSchema.findById(adminId);
+
+    if (!admin) {
+      return sendError(res, 404, "Admin not found");
+    }
+
+    await adminSchema.findByIdAndDelete(adminId);
+
+    return res.status(200).json({
+      message: "Admin deleted successfully",
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      error: "Error deleting the admin",
+    });
+  }
+};
+
+
+
 module.exports = {
-    createAdmin,
-    loginAdmin
+  createAdmin,
+  loginAdmin,
+  cancelLoad,
+  deleteLoad,
+  getAdmins,
+  deleteAdmin
 }

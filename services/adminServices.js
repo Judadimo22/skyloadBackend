@@ -9,7 +9,7 @@ class AdminServices {
     static async registerAdminService( email, password, name, lastName) {
         try {
         console.log("Nuevo admin registrado", email);
-        const createAdmin = new AdminModel({ email, password, name, lastName});
+        const createAdmin = new AdminModel({ email, password, name, lastName, rol: 'admin'});
         return await createAdmin.save();
         } catch (err) {
         throw err;
