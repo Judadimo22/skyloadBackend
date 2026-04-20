@@ -1,4 +1,4 @@
-const { createAdmin, loginAdmin, cancelLoad, deleteLoad, getAdmins, deleteAdmin } = require("../controllers/adminController")
+const { createAdmin, loginAdmin, cancelLoad, deleteLoad, getAdmins, deleteAdmin, updateUser } = require("../controllers/adminController")
 const { createLoad, getLoads, updateLoad } = require("../controllers/loadController")
 const { getUsers } = require("../controllers/userController")
 
@@ -42,6 +42,10 @@ router.put("/cancelLoad/:loadId", (req, res) => {
 
 router.put("/deleteLoad/:loadId", (req, res) => {
   deleteLoad(req, res)
+})
+
+router.put("/user/:id", (req, res) => {
+  updateUser(req, res)
 })
 
 

@@ -2,6 +2,8 @@ const adminSchema = require("../models/admin");
 const AdminServices = require("../services/adminServices");
 const { sendError } = require("../utils/funciones");
 const loadSchema = require("../models/load");
+const userSchema = require("../models/user");
+const bcrypt = require("bcrypt");
 
 const createAdmin = async (req, res) => {
   try {
@@ -220,6 +222,60 @@ const deleteAdmin = async (req, res) => {
   }
 };
 
+const updateUser = async (req, res) => {
+  const { id } = req.params;
+
+  const {
+    name,
+    lastName,
+    email,
+    vehicle,
+    vehicleDimension,
+    unitNumber,
+    newPassword,
+  } = req.body;
+
+  try {
+    const user = await userSchema.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        status: false,
+        message: "Usuario no encontrado",
+      });
+    }
+
+    // Campos normales
+    user.name = name ?? user.name;
+    user.lastName = lastName ?? user.lastName;
+    user.email = email ?? user.email;
+    user.vehicle = vehicle ?? user.vehicle;
+    user.vehicleDimension = vehicleDimension ?? user.vehicleDimension;
+    user.unitNumber = unitNumber ?? user.unitNumber;
+
+    // ✅ Solo asignas, NO hasheas aquí
+    if (newPassword && newPassword.trim() !== "") {
+      user.password = newPassword;
+    }
+
+    await user.save(); // 👈 aquí se ejecuta el pre("save")
+
+    return res.status(200).json({
+      status: true,
+      message: "Usuario actualizado correctamente",
+      data: user,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      status: false,
+      message: "Error al actualizar el usuario",
+    });
+  }
+};
+
+
 
 
 module.exports = {
@@ -228,5 +284,6 @@ module.exports = {
   cancelLoad,
   deleteLoad,
   getAdmins,
-  deleteAdmin
+  deleteAdmin,
+  updateUser
 }
