@@ -16,8 +16,8 @@ const createLoad = async (req, res) => {
   });
 
   // Validar si tiene 2 o más
-  if (userLoads.length >= 2) {
-    return sendError(res, 400, "The user already has 2 active loads assigned.");
+  if (userLoads.length >= 1) {
+    return sendError(res, 400, "The user already has 1 active loads assigned.");
   }
 
   try {
