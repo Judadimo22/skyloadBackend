@@ -62,7 +62,7 @@ const loginUser = async (req, res) => {
       }
     }
 
-    const tokenData = { _id: user._id, email: user.email };
+    const tokenData = { _id: user._id, email: user.email, name: user.name, lastName: user.lastName };
     const token = await UserServices.generateAccessToken(tokenData);
 
     res.status(200).json({

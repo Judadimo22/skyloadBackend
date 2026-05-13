@@ -96,7 +96,9 @@ const loginAdmin = async (req, res) => {
     const tokenData = {
       _id: admin._id,
       email: admin.email,
-      rol: admin.rol ?? ''
+      rol: admin.rol ?? '',
+      name: admin.name ?? '',
+      lastName: admin.lastName ?? ''
     };
 
     const token = await AdminServices.generateAccessToken(tokenData);
