@@ -262,6 +262,31 @@ const updateUserLocation = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return sendError(res, 400, "No se recibió el id del usuario");
+    }
+
+    const user = await userSchema.findById(id);
+
+    if (!user) {
+      return sendError(res, 404, "Usuario no encontrado");
+    }
+
+    await loadSchema.deleteMany({ user: id });
+    await userSchema.findByIdAndDelete(id);
+
+    return res.status(200).json({ message: "Cuenta eliminada exitosamente" });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Error eliminando la cuenta" });
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -269,6 +294,7 @@ module.exports = {
   getLoadsById,
   updateLoadState,
   updateUserLocation,
-  revertLoadState
+  revertLoadState,
+  deleteUser
 }
     

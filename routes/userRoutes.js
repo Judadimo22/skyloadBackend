@@ -1,5 +1,5 @@
 
-const { createUser, loginUser, getLoadsById, updateLoadState, updateUserLocation, revertLoadState } = require("../controllers/userController")
+const { createUser, loginUser, getLoadsById, updateLoadState, updateUserLocation, revertLoadState, deleteUser } = require("../controllers/userController")
 
 const router = require("express").Router()
 
@@ -25,6 +25,10 @@ router.put("/revertLoad/:loadId", (req, res) => {
 
 router.put("/updateLocation/:id", (req, res) => {
   updateUserLocation(req, res)
+})
+
+router.delete("/user/:id", (req, res) => {
+  deleteUser(req, res)
 })
 
 
