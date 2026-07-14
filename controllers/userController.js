@@ -236,7 +236,8 @@ const updateUserLocation = async (req, res) => {
       {
         lat: lat,
         lon: lon,
-        speed: speed
+        speed: speed,
+        locationUpdatedAt: new Date(),
       },
       { new: true }
     );
@@ -287,14 +288,46 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const getUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await userSchema.findById(id).select("-password");
+    if (!user) return sendError(res, 404, "User not found");
+    return res.status(200).json(user);
+  } catch (error) {
+    return res.status(500).json({ error: "Error fetching user" });
+  }
+};
+
+const toggleTracking = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { trackingEnabled } = req.body;
+    if (typeof trackingEnabled !== "boolean") {
+      return sendError(res, 400, "trackingEnabled must be a boolean");
+    }
+    const user = await userSchema.findByIdAndUpdate(
+      id,
+      { trackingEnabled },
+      { new: true }
+    ).select("-password");
+    if (!user) return sendError(res, 404, "User not found");
+    return res.status(200).json({ trackingEnabled: user.trackingEnabled });
+  } catch (error) {
+    return res.status(500).json({ error: "Error updating tracking status" });
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
   getUsers,
+  getUser,
   getLoadsById,
   updateLoadState,
   updateUserLocation,
   revertLoadState,
-  deleteUser
+  deleteUser,
+  toggleTracking
 }
     

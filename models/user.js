@@ -41,6 +41,13 @@ const userSchema = new mongoose.Schema({
     },
     lon: {
         type: String
+    },
+    trackingEnabled: {
+        type: Boolean,
+        default: true
+    },
+    locationUpdatedAt: {
+        type: Date
     }
 }, { timestamps: true });
 
